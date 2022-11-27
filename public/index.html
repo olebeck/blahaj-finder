@@ -279,19 +279,6 @@
 			const toggleableLayers = ["markers", "heatmap"];
 			const layerVisibility = { markers: true, heatmap: true };
 
-			for (const name of toggleableLayers) {
-				const el = document.getElementById("show-" + name);
-				el.checked = layerVisibility[name];
-				el.addEventListener("change", e => {
-					layerVisibility[name] = e.target.checked;
-					map.setLayoutProperty(
-						name,
-						"visibility",
-						e.target.checked ? "visible" : "none",
-					);
-				});
-			}
-
 			const map = new maplibregl.Map({
 				container: "map",
 				style: styles[0][1],
@@ -396,17 +383,8 @@
 					});
 				}
 
-
-				const product_select = document.getElementById("product-select");
-				for(const product_name of product_names) {
-					const opt = document.createElement("option");
-					opt.innerText = product_name;
-					opt.value = product_name;
-					product_select.appendChild(opt);
-					add_product(product_name);
-				}
-
-				function set_map_product_data(product_name) {
+				function set_map_product_data() {
+					const product_name = product_select.value;
 					const product = blahajData.data[product_name];
 					document.getElementById("total-stores").textContent =
 						product.length.toLocaleString("en-US");
@@ -429,10 +407,27 @@
 					}
 				}
 
-				product_select.onchange = (e) => {
-					set_map_product_data(product_select.value);
+				const product_select = document.getElementById("product-select");
+				for(const product_name of product_names) {
+					const opt = document.createElement("option");
+					opt.innerText = product_name;
+					opt.value = product_name;
+					product_select.appendChild(opt);
+					add_product(product_name);
 				}
-				set_map_product_data(product_select.value);
+				product_select.onchange = (e) => {
+					set_map_product_data();
+				}
+				set_map_product_data();
+
+				for (const name of toggleableLayers) {
+					const el = document.getElementById("show-" + name);
+					el.checked = layerVisibility[name];
+					el.addEventListener("change", e => {
+						layerVisibility[name] = e.target.checked;
+						set_map_product_data();
+					});
+				}
 			}
 		</script>
 	</body>
