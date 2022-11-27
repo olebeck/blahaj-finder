@@ -24,9 +24,10 @@ async function getStock(countryCode, languageCode, itemCode) {
 
 		return stock.data.availabilities
 			.map(storeAvail => {
-				const quantity =
-					storeAvail?.buyingOption?.cashCarry?.availability?.quantity;
-				if (quantity == null) return null;
+				const carryQuantity = storeAvail?.buyingOption?.cashCarry?.availability?.quantity;
+				const deliveryQuantity = storeAvail?.buyingOption?.homeDelivery?.availability?.quantity;
+				if (carryQuantity == null && deliveryQuantity == null) return null;
+				const quantity = carryQuantity ?? 0 + deliveryQuantity ?? 0;
 
 				const storeId = storeAvail?.classUnitKey?.classUnitCode;
 				const store = stores.data.find(store => store.id == storeId);
@@ -38,8 +39,7 @@ async function getStock(countryCode, languageCode, itemCode) {
 					lat: store.lat,
 					lng: store.lng,
 				};
-			})
-			.filter(store => store != null);
+			}).filter(store => store != null);
 	} catch (error) {
 		console.error(countryCode + "-" + languageCode + " failed");
 		return [];
@@ -47,24 +47,26 @@ async function getStock(countryCode, languageCode, itemCode) {
 }
 
 export async function generateBlahajData() {
-	const blahajRequestInfo = [
-		...blahajDb.americas,
-		...blahajDb.europe,
-		...blahajDb.asia,
-		...blahajDb.africa,
-		...blahajDb.oceania,
-	];
+	const product_names = Object.keys(blahajDb);
 
-	const limit = pLimit(10); // requests at a time
-	const blahajStockResponse = await Promise.all(
-		blahajRequestInfo.map(info =>
-			limit(() => getStock(info[0], info[1], info[2])),
-		),
-	);
+	const blahajData = {};
+	
+	for(const product_name of product_names) {
+		const regions = blahajDb[product_name];
 
-	// flattens [[],[],[]] to a single array
-	const blahajData = [].concat.apply([], blahajStockResponse);
-	console.log(`Fetched data from ${blahajData.length} stores`);
+		const blahajRequestInfo = Object.values(regions).flat();
+
+		const limit = pLimit(10); // requests at a time
+		const blahajStockResponse = await Promise.all(
+			blahajRequestInfo.map(info =>
+				limit(() => getStock(info[0], info[1], info[2])),
+			),
+		);
+
+		// flattens [[],[],[]] to a single array
+		blahajData[product_name] = blahajStockResponse.flat();
+		console.log(`Fetched ${product_name} data from ${blahajData[product_name] .length} stores`);
+	}
 
 	return {
 		updated: new Date().toISOString(),
