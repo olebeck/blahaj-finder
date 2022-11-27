@@ -116,6 +116,15 @@ export const blahajDb = {
 		],
 	},
 	smolhåj: {
+		americas: [
+			// north america
+			["us", "en", "70540665"],
+			["ca", "en", "70540665"],
+			["mx", "es", "70540665"], // mexico
+			["cl", "es", "70540665"], // chile
+			// dominica, regional site
+			// pureto rico, regional site
+		],
 		europe: [
 			// https://www.worldometers.info/geography/how-many-countries-in-europe/
 			["ru", "ru", "20540663"], // russia
@@ -158,7 +167,68 @@ export const blahajDb = {
 			// liechtenstein has no ikea
 			// san marino has no ikea
 			// holy see has no ikea
-
-		]
+		],
+		asia: [
+			// afghanistan -
+			// armenia -
+			// azerbaijan -
+			["bh", "ar", "20540663"], // bahrain
+			// bangladesh -
+			// bhutan -
+			// brunei -
+			// burma/myanmar -
+			// cambodia -
+			["cn", "zh", "20540663"], // china, redirected to local site, but same api
+			// taiwan, regional site
+			// hongkong and macau, regional site
+			// cyprus, different api?
+			// georgia -
+			["in", "en", "20540663"], // india
+			// indonesia, regional? site
+			// iran -
+			// iraq -
+			["il", "he", "20540663"], // israel
+			["jp", "ja", "20540663"], // japan
+			["jo", "ar", "20540663"], // jordan
+			// kazakhstan -
+			["kw", "ar", "20540663"], // kuwait
+			// kyrgyzstan -
+			// laos -
+			// lebanon -
+			["my", "ms", "20540663"], // malaysia
+			// maldives -
+			// mongolia -
+			// nepal -
+			// north korea -
+			// oman 2022
+			// pakistan -
+			// palestine -
+			["ph", "en", "20540663"], // philippines
+			["qa", "ar", "20540663"], // qatar
+			["sa", "ar", "20540663"], // saudi arabia
+			["sg", "en", "20540663"], // singapore
+			["kr", "ko", "20540663"], // south korea
+			// sri lanka -
+			// syria -
+			// tajikstan -
+			["th", "th", "20540663"], // thailand
+			// east timor -
+			// turkey, regional? site
+			// turkmenistan -
+			["ae", "ar", "20540663"], // united arab emirates
+			// uzbekistan -
+			// vietnam 2025
+			// yemen -
+		],
+		africa: [
+			["eg", "ar", "20540663"], // egypt
+			["ma", "ar", "20540663"], // morocco
+			// only 2 country as of 2022-05-01
+		],
+		oceania: [
+			["au", "en", "00540664"], // australia
+			// new zealand, 2022
+			// only 1 country and 1 planned as of 2022-05-01
+		],
 	}
 };

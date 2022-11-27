@@ -22,6 +22,10 @@ async function getStock(countryCode, languageCode, itemCode) {
 			},
 		});
 
+		if(stock.data.errors?.length > 0) {
+			throw stock.data.errors[0];
+		}
+
 		return stock.data.availabilities
 			.map(storeAvail => {
 				const carryQuantity = storeAvail?.buyingOption?.cashCarry?.availability?.quantity;
@@ -41,7 +45,7 @@ async function getStock(countryCode, languageCode, itemCode) {
 				};
 			}).filter(store => store != null);
 	} catch (error) {
-		console.error(countryCode + "-" + languageCode + " failed");
+		console.error(countryCode + "-" + languageCode + " failed", error);
 		return [];
 	}
 }
@@ -66,6 +70,9 @@ export async function generateBlahajData() {
 		// flattens [[],[],[]] to a single array
 		blahajData[product_name] = blahajStockResponse.flat();
 		console.log(`Fetched ${product_name} data from ${blahajData[product_name] .length} stores`);
+
+		const total = blahajData[product_name].reduce((a,b) => a + b.quantity, 0);
+		console.log(`Total ${product_name}: ${total}`);
 	}
 
 	return {
