@@ -6,6 +6,7 @@ import { generateBlahajData } from "./generate.mjs";
 import { CronJob } from "cron";
 import process from "process";
 import webpush from "web-push";
+import crypto from "crypto"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.resolve(__dirname, "public");
@@ -78,6 +79,7 @@ async function saveSubscriptionToDatabase(sub) {
 		sub.notify = []
 	}
 	const sub_id = await subid(sub.push.endpoint).catch(e => console.error(e));
+	console.log("saving", sub_id, sub);
 	if(!sub_id) return false;
 	subs[sub_id] = sub;
 	await saveSubs(subs);
@@ -119,6 +121,7 @@ app.post("/api/sub-get-notify", async function (req, res) {
 	const sub_id = await subid(req.body.endpoint).catch(e => console.error(e));
 	const sub = subs[sub_id];
 	if(!sub) {
+		console.log("get-notify", sub_id, "not found")
 		res.status(404);
 		res.send();
 		return;
@@ -133,6 +136,7 @@ app.post("/api/sub-set-notify", async function (req, res) {
 	const sub_id = await subid(req.body.endpoint);
 	const sub = subs[sub_id];
 	if(!sub) {
+		console.log("set-notify", sub_id, "not found")
 		res.status(404);
 		res.send();
 		return;
@@ -193,10 +197,14 @@ app.post('/api/save-subscription/', async function (req, res) {
 		  }),
 		);
 	  });
-	if(!save) return;
+
+	let success = true;
+	if(!save) {
+		success = false;
+	}
 
 	res.setHeader('Content-Type', 'application/json');
-	res.send(JSON.stringify({data: {success: true}}));
+	res.send(JSON.stringify({data: {success: success}}));
   });
 
 

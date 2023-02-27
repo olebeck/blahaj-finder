@@ -364,7 +364,7 @@
 				const push = await getSubscription();
 				if(push) {
 					my_notify = await api_get_notify(push);
-					my_notify = my_notify.filter(e => e.product != product && e.store != store);
+					my_notify = my_notify.filter(e => !(e.store == store && e.product == product));
 					await api_set_notify(push, my_notify);
 				}
 			}
