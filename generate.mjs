@@ -18,7 +18,7 @@ async function getStock(countryCode, languageCode, itemCode) {
 			params: {
 				itemNos: itemCode,
 				// expand: "StoresList,Restocks,SalesLocations",
-				expand: "StoresList",
+				expand: "StoresList,Restocks",
 			},
 		});
 
@@ -28,22 +28,26 @@ async function getStock(countryCode, languageCode, itemCode) {
 
 		return stock.data.availabilities
 			.map(storeAvail => {
-				const carryQuantity = storeAvail?.buyingOption?.cashCarry?.availability?.quantity;
-				const deliveryQuantity = storeAvail?.buyingOption?.homeDelivery?.availability?.quantity;
-				if (carryQuantity == null && deliveryQuantity == null) return null;
-				const quantity = carryQuantity ?? 0 + deliveryQuantity ?? 0;
-
-				const storeId = storeAvail?.classUnitKey?.classUnitCode;
+				const storeId = storeAvail.classUnitKey.classUnitCode;
 				const store = stores.data.find(store => store.id == storeId);
 				if (store == null) return null;
 
+				const {cashCarry, homeDelivery} = storeAvail.buyingOption;
+
+				const carryQuantity = cashCarry.availability?.quantity;
+				if (carryQuantity == null) return null;
+				const quantity = carryQuantity ?? 0;
+
+				const restocks = cashCarry.availability.restocks ?? [];
+
 				return {
 					quantity,
+					restocks,
 					name: store.name,
 					lat: store.lat,
 					lng: store.lng,
 				};
-			}).filter(store => store != null);
+			}).filter(e => e);
 	} catch (error) {
 		console.error(countryCode + "-" + languageCode + " failed", error);
 		return [];
